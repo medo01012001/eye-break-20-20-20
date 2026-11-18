@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>20·20·20 — راحة العينين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1720; --bg2:#16212d; --card:#1b2836; --text:#e8eef5; --muted:#8fa1b3;
+    --work:#3fb6a8; --rest:#f2b84b; --danger:#e8665a; --ring-bg:#26374a;
+  }
+  :root[data-theme="light"]{
+    --bg:#eef3f7; --bg2:#ffffff; --card:#ffffff; --text:#1c2733; --muted:#5d6f80;
+    --work:#1f9a8c; --rest:#d9921c; --danger:#c8473b; --ring-bg:#dbe5ee;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Cairo",system-ui,sans-serif;background:radial-gradient(circle at 50% 0%,var(--bg2),var(--bg) 70%);
+    color:var(--text);display:flex;align-items:center;justify-content:center;padding:16px;transition:background .6s;
+  }
+  body.resting{background:radial-gradient(circle at 50% 0%,color-mix(in srgb,var(--rest) 22%,var(--bg2)),var(--bg) 70%)}
+  .app{width:100%;max-width:440px;text-align:center}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  h1{font-size:1.25rem;margin:0;font-weight:800;letter-spacing:.5px}
+  h1 span{color:var(--work)}
+  .icon-btn{background:var(--card);border:1px solid var(--ring-bg);color:var(--text);width:40px;height:40px;border-radius:12px;cursor:pointer;font-size:1.1rem}
+  .rule{color:var(--muted);font-size:.9rem;margin:0 0 18px;line-height:1.7}
+  .ring-wrap{position:relative;width:min(300px,80vw);aspect-ratio:1;margin:0 auto 14px}
+  svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring-bg{stroke:var(--ring-bg)}
+  .ring{stroke:var(--work);stroke-linecap:round;transition:stroke-dashoffset .3s linear,stroke .4s}
+  body.resting .ring{stroke:var(--rest)}
+  .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .phase{font-size:1rem;color:var(--muted);font-weight:600}
+  .time{font-size:clamp(2.8rem,14vw,4.2rem);font-weight:800;direction:ltr;font-variant-numeric:tabular-nums;line-height:1.1}
+  .hint{font-size:.85rem;color:var(--muted);min-height:1.4em;padding:0 30px}
+  body.resting .phase{color:var(--rest)}
+  .eye{font-size:2rem;margin-bottom:2px}
+  body.resting .eye{animation:blink 2.5s infinite}
+  @keyframes blink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  .controls{display:flex;gap:10px;justify-content:center;margin:6px 0 18px}
+  .btn{font-family:inherit;font-size:1rem;font-weight:700;border:none;border-radius:14px;padding:12px 22px;cursor:pointer;background:var(--card);color:var(--text);border:1px solid var(--ring-bg)}
+  .btn.primary{background:var(--work);color:#fff;border-color:transparent;min-width:130px}
+  body.resting .btn.primary{background:var(--rest)}
+  .btn:active{transform:scale(.97)}
+  .stats{display:flex;gap:10px;margin-bottom:12px}
+  .stat{flex:1;background:var(--card);border:1px solid var(--ring-bg);border-radius:14px;padding:10px}
+  .stat b{display:block;font-size:1.4rem}
+  .stat small{color:var(--muted)}
+  details{background:var(--card);border:1px solid var(--ring-bg);border-radius:14px;padding:10px 14px;text-align:right}
+  summary{cursor:pointer;font-weight:700}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;font-size:.92rem}
+  .row input[type=number]{width:70px;font-family:inherit;font-size:1rem;padding:4px 6px;border-radius:8px;border:1px solid var(--ring-bg);background:var(--bg);color:var(--text);text-align:center}
+  .row input[type=range]{width:130px;accent-color:var(--work)}
+  .row select{font-family:inherit;padding:4px;border-radius:8px;background:var(--bg);color:var(--text);border:1px solid var(--ring-bg)}
+  .small-btn{font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:10px;border:1px solid var(--ring-bg);background:var(--bg);color:var(--text);cursor:pointer}
+  .note{font-size:.78rem;color:var(--muted);margin-top:14px;line-height:1.6}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>👁️ <span>20</span>·<span>20</span>·<span>20</span></h1>
+    <button class="icon-btn" id="themeBtn" title="بدّل الثيم">🌓</button>
+  </header>
+  <p class="rule">كل <b>20 دقيقة</b> قدام الشاشة، شوف شي حاجة بعيدة <b>6 ميترو</b> (20 قدم) لمدة <b>20 ثانية</b>.</p>
+
+  <div class="ring-wrap">
+    <svg viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="54" fill="none" stroke-width="8"/>
+      <circle class="ring" id="ring" cx="60" cy="60" r="54" fill="none" stroke-width="8"/>
+    </svg>
+    <div class="center">
+      <div class="eye" id="eye">💻</div>
+      <div class="phase" id="phase">وقت الخدمة</div>
+      <div class="time" id="time">20:00</div>
+      <div class="hint" id="hint">ضغط "بدا" باش يخدم العداد</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary" id="startBtn">▶ بدا</button>
+    <button class="btn" id="resetBtn">↺ عاود</button>
+    <button class="btn" id="skipBtn" title="دوز للمرحلة الجاية">⏭</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="breaksToday">0</b><small>راحات اليوم</small></div>
+    <div class="stat"><b id="screenToday">0</b><small>دقايق قدام الشاشة</small></div>
+  </div>
+
+  <details>
+    <summary>⚙️ الإعدادات</summary>
+    <div class="row"><label for="workMin">مدة الخدمة (دقايق)</label><input type="number" id="workMin" min="1" max="120" value="20"></div>
+    <div class="row"><label for="restSec">مدة الراحة (ثواني)</label><input type="number" id="restSec" min="5" max="300" value="20"></div>
+    <div class="row"><label for="sound">نوع الرنين</label>
+      <select id="sound"><option value="chime">جرس هادئ</option><option value="bell">ناقوس</option><option value="beep">بيب</option></select></div>
+    <div class="row"><label for="vol">الصوت</label><input type="range" id="vol" min="0" max="1" step="0.05" value="0.7"></div>
+    <div class="row"><span>تجربة الرنين</span><button class="small-btn" id="testBtn">🔔 جرّب</button></div>
+    <div class="row"><span>إشعارات الحاسوب</span><button class="small-btn" id="notifBtn">فعّل</button></div>
+    <div class="row"><label for="autoLoop">يعاود بوحدو بعد الراحة</label><input type="checkbox" id="autoLoop" checked></div>
+    <p class="note">💡 خلي هاد الصفحة محلولة (ولو فـ tab آخر). الإشعارات كيبانو حتى إلا كنتي فشي برنامج آخر.</p>
+  </details>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const R = 54, C = 2 * Math.PI * R;
+  const ring = $('ring');
+  ring.style.strokeDasharray = C;
+
+  // ---------- storage (safe) ----------
+  const store = {
+    get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch{ return d; } },
+    set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+  };
+  const settings = Object.assign({workMin:20, restSec:20, sound:'chime', vol:0.7, autoLoop:true, theme:null}, store.get('s2020', {}));
+  const todayKey = () => new Date().toISOString().slice(0,10);
+  let stats = store.get('stats2020', {day:todayKey(), breaks:0, screenSec:0});
+  if (stats.day !== todayKey()) stats = {day:todayKey(), breaks:0, screenSec:0};
+
+  $('workMin').value = settings.workMin; $('restSec').value = settings.restSec;
+  $('sound').value = settings.sound; $('vol').value = settings.vol; $('autoLoop').checked = settings.autoLoop;
+  if (settings.theme) document.documentElement.dataset.theme = settings.theme;
+
+  // ---------- audio ----------
+  let ctx;
+  const audio = () => { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === 'suspended') ctx.resume(); return ctx; };
+  function tone(freq, start, dur, type='sine', gain=1){
+    const a = audio(), o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.value = freq;
+    const v = settings.vol * gain, t = a.currentTime + start;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(v,0.0002), t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function ring_(kind){ // kind: 'rest' (start of break) | 'work' (back to work)
+    const s = settings.sound;
+    if (s === 'beep'){ const n = kind==='rest'?3:1; for(let i=0;i<n;i++) tone(880, i*0.3, 0.18, 'square', .35); return; }
+    if (s === 'bell'){ [0,1.2].slice(0, kind==='rest'?2:1).forEach(st => { tone(523,st,2,'sine'); tone(1046,st,1.4,'sine',.4); tone(1568,st,.8,'sine',.2); }); return; }
+    const notes = kind==='rest' ? [659,784,988,1319] : [988,784];
+    notes.forEach((f,i) => { tone(f, i*0.22, 1.2, 'sine', .8); tone(f*2, i*0.22, .5, 'triangle', .15); });
+  }
+
+  // ---------- notifications ----------
+  function updateNotifBtn(){
+    const b = $('notifBtn');
+    if (!('Notification' in window)) { b.textContent = 'ما متوفراش'; b.disabled = true; return; }
+    b.textContent = Notification.permission === 'granted' ? '✅ مفعّلة' : Notification.permission === 'denied' ? '🚫 ممنوعة' : 'فعّل';
+  }
+  function notify(title, body){
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try { const n = new Notification(title, {body, tag:'2020', requireInteraction:false}); n.onclick = () => { window.focus(); n.close(); }; } catch {}
+    }
+  }
+
+  // ---------- timer ----------
+  let phase = 'work', running = false, endAt = 0, remaining = settings.workMin*60*1000, total = remaining, tick = null, lastTick = 0;
+  const durFor = p => p === 'work' ? settings.workMin*60*1000 : settings.restSec*1000;
+  const fmt = ms => { const s = Math.ceil(ms/1000); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); };
+
+  function render(){
+    const t = fmt(remaining);
+    $('time').textContent = t;
+    ring.style.strokeDashoffset = C * (1 - remaining/total);
+    document.body.classList.toggle('resting', phase === 'rest');
+    $('phase').textContent = phase === 'work' ? 'وقت الخدمة' : 'شوف بعيد! 👀';
+    $('eye').textContent = phase === 'work' ? '💻' : '👁️';
+    $('hint').textContent = phase === 'rest' ? 'بعّد عينيك على الشاشة وشوف شي حاجة بعيدة 6 ميترو'
+      : running ? 'العداد خدام… غادي نفكرك ملي يسالي' : 'ضغط "بدا" باش يخدم العداد';
+    $('startBtn').textContent = running ? '⏸ وقّف' : (remaining < total ? '▶ كمّل' : '▶ بدا');
+    document.title = running ? `${phase==='work'?'💻':'👀'} ${t} — 20·20·20` : '20·20·20 — راحة العينين';
+    $('breaksToday').textContent = stats.breaks;
+    $('screenToday').textContent = Math.floor(stats.screenSec/60);
+  }
+
+  function loop(){
+    const now = Date.now();
+    if (phase === 'work' && lastTick) stats.screenSec += (now - lastTick)/1000;
+    lastTick = now;
+    remaining = Math.max(0, endAt - now);
+    if (remaining <= 0) switchPhase();
+    render();
+    if (now % 5000 < 300) store.set('stats2020', stats);
+  }
+
+  function switchPhase(){
+    if (phase === 'work'){
+      phase = 'rest'; ring_('rest');
+      notify('👀 وقت الراحة ديال عينيك!', `حبس من الشاشة وشوف شي حاجة بعيدة لمدة ${settings.restSec} ثانية.`);
+      setDuration(); start();
+    } else {
+      phase = 'work'; stats.breaks++; store.set('stats2020', stats); ring_('work');
+      notify('✅ صافي، رجع للخدمة', `العداد الجاي: ${settings.workMin} دقيقة.`);
+      setDuration();
+      if (settings.autoLoop) start(); else stop();
+    }
+  }
+  function setDuration(){ total = remaining = durFor(phase); }
+  function start(){
+    audio();
+    running = true; endAt = Date.now() + remaining; lastTick = Date.now();
+    clearInterval(tick); tick = setInterval(loop, 250); render();
+  }
+  function stop(){ running = false; clearInterval(tick); lastTick = 0; store.set('stats2020', stats); render(); }
+
+  // ---------- events ----------
+  $('startBtn').onclick = () => {
+    if (!running && 'Notification' in window && Notification.permission === 'default') Notification.requestPermission().then(updateNotifBtn);
+    running ? stop() : start();
+  };
+  $('resetBtn').onclick = () => { stop(); phase = 'work'; setDuration(); render(); };
+  $('skipBtn').onclick = () => { const was = running; endAt = Date.now(); remaining = 0; if (!was){ start(); } loop(); };
+  $('testBtn').onclick = () => ring_('rest');
+  $('notifBtn').onclick = () => { if ('Notification' in window) Notification.requestPermission().then(p => { updateNotifBtn(); if (p==='granted') notify('🔔 الإشعارات خدامة', 'غادي نفكرك كل 20 دقيقة.'); }); };
+  $('themeBtn').onclick = () => {
+    const cur = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = cur; settings.theme = cur; store.set('s2020', settings);
+  };
+  const saveNum = (id, key, min, max) => $(id).onchange = e => {
+    const v = Math.min(max, Math.max(min, parseInt(e.target.value) || min));
+    e.target.value = v; settings[key] = v; store.set('s2020', settings);
+    if (!running) { setDuration(); render(); }
+  };
+  saveNum('workMin','workMin',1,120); saveNum('restSec','restSec',5,300);
+  $('sound').onchange = e => { settings.sound = e.target.value; store.set('s2020', settings); ring_('rest'); };
+  $('vol').oninput = e => { settings.vol = parseFloat(e.target.value); store.set('s2020', settings); };
+  $('autoLoop').onchange = e => { settings.autoLoop = e.target.checked; store.set('s2020', settings); };
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target.tagName !== 'INPUT') { e.preventDefault(); $('startBtn').click(); } });
+  window.addEventListener('beforeunload', () => store.set('stats2020', stats));
+
+  updateNotifBtn(); render();
+})();
+</script>
+</body>
+</html>
